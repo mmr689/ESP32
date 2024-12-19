@@ -4,8 +4,9 @@
 
 extern PubSubClient client;     // External MQTT client instance (defined elsewhere in the project)
 
-// Global variable to store the message that will be sent in the uplink
+// Global variables that can be modified by downlinks
 String uplink_message = "Hello world!";
+unsigned long send_interval = SEND_INTERVAL;
 
 // Callback function to process received MQTT messages
 void mqtt_callback(char* topic, byte* payload, unsigned int length) {
@@ -28,14 +29,23 @@ void mqtt_callback(char* topic, byte* payload, unsigned int length) {
         Serial.println("Error parsing JSON. Using the message as plain text.");
         uplink_message = received_message;
     } else {
-        // If the message is valid JSON, look for a specific key
+        // If the message is valid JSON, look for keys
         if (doc.containsKey("uplink_message")) {
-            // Update the uplink message with the value from the JSON
             uplink_message = doc["uplink_message"].as<String>();
             Serial.print("Uplink message updated to: ");
             Serial.println(uplink_message);
-        } else {
-            Serial.println("Key 'uplink_message' not found in the JSON.");
+        }
+
+        if (doc.containsKey("send_interval_seconds")) {
+            int interval_seconds = doc["send_interval_seconds"];
+            if (interval_seconds > 0) {
+                send_interval = interval_seconds * 1000; // Convert to milliseconds
+                Serial.print("Send interval updated to: ");
+                Serial.print(interval_seconds);
+                Serial.println(" seconds.");
+            } else {
+                Serial.println("Invalid interval value. Must be greater than 0.");
+            }
         }
     }
 }
@@ -72,4 +82,8 @@ void publish_message(const char* message) {
 // Function to get the current uplink message
 String get_uplink_message() {
     return uplink_message;
+}
+
+unsigned long get_send_interval() {
+    return send_interval;
 }

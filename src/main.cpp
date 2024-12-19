@@ -8,7 +8,9 @@
 void setup_wifi();                   // Function to connect to Wi-Fi
 void reconnect();                    // Function to reconnect to the MQTT broker
 void publish_message(const char* message); // Function to publish messages to MQTT
-String get_uplink_message();         // Function to get the current uplink message
+
+String get_uplink_message();          // Function to get the current uplink message
+unsigned long get_send_interval();    // Function to get the current send time interval
 
 // Global variables
 WiFiClient espClient;                // Wi-Fi client instance
@@ -39,7 +41,7 @@ void loop() {
     // Publish a message every 5 seconds
     static unsigned long lastMsg = 0; // Track the last message time
     unsigned long now = millis();    // Get the current time in milliseconds
-    if (now - lastMsg > 5000) {      // Check if 5 seconds have passed
+    if (now - lastMsg > get_send_interval()) {      // Check if SEND_INTERVAL seconds have passed
         lastMsg = now;               // Update the last message time
         String uplink_message = get_uplink_message();  // Get the current uplink message
         publish_message(uplink_message.c_str());       // Publish the message to MQTT
