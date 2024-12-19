@@ -13,4 +13,6 @@
 #define MQTT_TOPIC_DOWNLINK "controller/" DEVICE_ID "/down"
 #define MQTT_TOPIC_PING "controller/" DEVICE_ID "/ping"
 
+void mqtt_callback(char* topic, byte* payload, unsigned int length);
+
 #endif
