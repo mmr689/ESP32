@@ -1,0 +1,6 @@
+#ifndef DEVICE_CONFIG_H
+#define DEVICE_CONFIG_H
+
+#define DEVICE_ID "b202400000009999"
+
+#endif
